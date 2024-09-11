@@ -1,4 +1,5 @@
-name: Create Releases
+
+name: Package Application with Pyinstaller
 
 on:
   push:
@@ -7,78 +8,18 @@ on:
 
 jobs:
   build:
-    name: Build app
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - os: ubuntu-22.04
-          - os: macos-latest
-          - os: windows-2019
-    steps:
-      - name: Install tk on ubuntu
-        if: ${{ matrix.config.os == 'ubuntu-22.04'}}
-        run: |
-          sudo apt-get update
-          sudo apt install python3-tk python3-dev python3-setuptools tcl
 
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12.4'
-
-      - name: Install dependencies for ${{ matrix.config.os }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
-
-      - name: Build with pyinstaller for ${{ matrix.config.os }}
-        run: pyinstaller docsign.py --noconsole
-
-      - name: Rename builded app
-        run: mv ./dist ./dist-${{ matrix.config.os }}
-
-      - name: Upload result job ${{ matrix.config.os }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: docsign-pyinstaller-artifact
-          path: ./dist*
-
-  release:
-    name: Release
     runs-on: ubuntu-latest
-    needs: build
+
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: docsign-pyinstaller-artifact
+    - uses: actions/checkout@v2
 
-      - name: Zip file windows
-        run: zip -r docsign_windows.zip dist-windows-*
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: .
 
-      - name: Zip file ubuntu
-        run: zip -r docsign_ubuntu.zip dist-ubuntu-*
-
-      - name: Zip file macos
-        run: zip -r docsign_macos.zip dist-macos-*
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          draft: false
-          prerelease: false
-          files: |
-            docsign_windows.zip
-            docsign_ubuntu.zip
-            docsign_macos.zip
-
+    - uses: actions/upload-artifact@v2
+      with:
+        name: docsign-python-0.0.3-windows
+        path: dist/windows
