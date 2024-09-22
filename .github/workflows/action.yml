@@ -84,7 +84,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            docsign-${GITHUB_REF_NAME}-x64.zip
-            docsign-${GITHUB_REF_NAME}-x86_64.zip
-            docsign-${GITHUB_REF_NAME}-arm64.zip
+            docsign-*.zip
 
