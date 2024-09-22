@@ -1,4 +1,4 @@
-name: Create Releases
+name: Build and Create Releases
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
           - os: macos-latest
     steps:
       - name: Install tk on ubuntu
-        if: ${{ matrix.config.os == 'ubuntu-22.04'}}
+        if: ${{ matrix.config.os == 'ubuntu-22.04' }}
         run: |
           sudo apt-get update
           sudo apt install python3-tk
