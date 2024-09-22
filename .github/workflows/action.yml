@@ -61,17 +61,17 @@ jobs:
 
       - name: Zip file windows
         run: |
-          mv dist-windows-* docsign
+          mv ./dist-windows-* docsign
           zip -mrT docsign-${{ github.ref }}-x64.zip docsign
 
       - name: Zip file ubuntu
         run: |
-          mv dist-ubuntu-* docsign
+          mv ./dist-ubuntu-* docsign
           zip -mrT docsign-${{ github.ref }}-x86_64.zip docsign
 
       - name: Zip file macos
         run: |
-          mv dist-macos-* docsign
+          mv ./dist-macos-* docsign
           zip -mrT docsign-${{ github.ref }}-arm64.zip docsign
 
       - name: Create Release
