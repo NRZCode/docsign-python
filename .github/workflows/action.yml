@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     name: Build app
-    permissions: write-all
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
