@@ -13,8 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          - os: ubuntu-22.04
           - os: windows-latest
-          - os: ubuntu-latest
           - os: macos-latest
     steps:
       - name: Install tk on ubuntu
@@ -41,13 +41,13 @@ jobs:
         run: pyinstaller docsign.py --noconsole
 
       - name: Rename builded app
-        run: mv ./dist ./dist-${{ matrix.config.os }}
+        run: mv ./dist/docsign ./dist-${{ matrix.config.os }}
 
       - name: Upload result job ${{ matrix.config.os }}
         uses: actions/upload-artifact@v3
         with:
           name: docsign-pyinstaller-artifact
-          path: ./dist*
+          path: ./dist-*
 
   release:
     name: Release
@@ -60,13 +60,19 @@ jobs:
           name: docsign-pyinstaller-artifact
 
       - name: Zip file windows
-        run: zip -r docsign_windows.zip dist-windows-*
+        run: |
+          mv dist-windows-* docsign
+          zip -mrT docsign-${{ github.ref }}-x64.zip docsign
 
       - name: Zip file ubuntu
-        run: zip -r docsign_ubuntu.zip dist-ubuntu-*
+        run: |
+          mv dist-ubuntu-* docsign
+          zip -mrT docsign-${{ github.ref }}-x86_64.zip docsign
 
       - name: Zip file macos
-        run: zip -r docsign_macos.zip dist-macos-*
+        run: |
+          mv dist-macos-* docsign
+          zip -mrT docsign-${{ github.ref }}-arm64.zip docsign
 
       - name: Create Release
         id: create_release
@@ -78,7 +84,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            docsign_windows.zip
-            docsign_ubuntu.zip
-            docsign_macos.zip
+            docsign-${{ github.ref }}-x64.zip
+            docsign-${{ github.ref }}-x86_64.zip
+            docsign-${{ github.ref }}-arm64.zip
 
